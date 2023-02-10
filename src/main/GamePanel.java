@@ -11,6 +11,7 @@ import entity.Player;
 import object.SuperObject;
 import tile.TileManager;
 
+@SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
 	// Screen Settings
 	
