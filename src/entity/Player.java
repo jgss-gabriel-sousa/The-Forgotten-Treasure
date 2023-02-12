@@ -22,6 +22,7 @@ public class Player extends Entity {
 	public final int screenY;
 	
 	public int keyCount = 0;
+	public int swordCount = 0;
 	int standCounter = 0;
 	
 	public Player(GamePanel gp, InputHandler ih) {
@@ -139,6 +140,13 @@ public class Player extends Entity {
 				gp.ui.showMessage("You got a key!");
 				break;
 				
+			case "Sword":
+				gp.playSFX(sound.COIN);
+				swordCount++;
+				gp.obj[index] = null;
+				gp.ui.showMessage("You got a sword!");
+				break;
+				
 			case "Door":
 				if(keyCount > 0) {
 					gp.playSFX(sound.UNLOCK);
@@ -150,6 +158,19 @@ public class Player extends Entity {
 					gp.ui.showMessage("You need a key!");
 				}
 				break;
+				
+			case "Spider":
+				if(swordCount > 0) {
+					gp.playSFX(sound.CUT);
+					gp.obj[index] = null;
+					swordCount--;
+					gp.ui.showMessage("You sliced the webs!");
+				}
+				else {
+					gp.ui.showMessage("You need a sword!");
+				}
+				break;
+				
 				
 			case "Boots":
 				gp.playSFX(sound.POWERUP);

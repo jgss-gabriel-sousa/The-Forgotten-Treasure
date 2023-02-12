@@ -4,6 +4,8 @@ import object.OBJ_Boots;
 import object.OBJ_Chest;
 import object.OBJ_Door;
 import object.OBJ_Key;
+import object.OBJ_Spider;
+import object.OBJ_Sword;
 import object.SuperObject;
 
 public class AssetManager {
@@ -21,6 +23,8 @@ public class AssetManager {
 		if(type == "door") 		obj = new OBJ_Door(gp);
 		if(type == "chest") 	obj = new OBJ_Chest(gp);
 		if(type == "boots")		obj = new OBJ_Boots(gp);
+		if(type == "spider")	obj = new OBJ_Spider(gp);
+		if(type == "sword")		obj = new OBJ_Sword(gp);
 
 		
 		obj.worldX = tileX * gp.tileSize;
@@ -40,7 +44,13 @@ public class AssetManager {
 		set("door", 12, 23);
 		set("door", 30, 40);
 		
+		set("spider", 31, 38);
+		set("spider", 36, 30);
+		set("spider", 8, 28);
 		
+		set("sword", 23, 7);
+		set("sword", 27, 27);
+		set("sword", 38, 8);
 		
 		set("boots", 37, 42);
 		

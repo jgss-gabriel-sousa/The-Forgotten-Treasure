@@ -16,6 +16,7 @@ public class Sound {
 	public final int POWERUP = 2;
 	public final int UNLOCK = 3;
 	public final int FANFARE = 4;
+	public final int CUT = 5;
 	
 	public Sound() {
 		soundURL[BGM] = getClass().getResource("/sound/bgm.wav");
@@ -23,6 +24,7 @@ public class Sound {
 		soundURL[POWERUP] = getClass().getResource("/sound/powerup.wav");
 		soundURL[UNLOCK] = getClass().getResource("/sound/unlock.wav");
 		soundURL[FANFARE] = getClass().getResource("/sound/fanfare.wav");
+		soundURL[CUT] = getClass().getResource("/sound/cut.wav");
 	}
 	
 	public void setFile(int id) {

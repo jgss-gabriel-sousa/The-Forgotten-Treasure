@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
 import object.OBJ_Key;
+import object.OBJ_Sword;
 
 public class UI {
 	GamePanel gp;
@@ -28,6 +29,8 @@ public class UI {
 		arial_80B = new Font("Arial", Font.BOLD, 80);
 		OBJ_Key key = new OBJ_Key(gp);
 		keyImage = key.image;
+		OBJ_Sword sword = new OBJ_Sword(gp);
+		swordImage = sword.image;
 	}
 	
 	public void showMessage(String text) {
@@ -45,6 +48,7 @@ public class UI {
 			g2.drawString("Player Direction: "+gp.player.direction, 5, i++*10);
 			g2.drawString("Player Sprite: "+gp.player.spriteNum, 5, i++*10);
 			g2.drawString("Player Key Count: "+gp.player.keyCount, 5, i++*10);
+			g2.drawString("Player Sword Count: "+gp.player.swordCount, 5, i++*10);
 			g2.drawString("Draw Time: "+dFormat3.format(gp.drawTime/10000000)+"ms", 5, i++*10);
 			int xPos = gp.player.worldX + (gp.tileSize/2);
 			int yPos = gp.player.worldY + (gp.tileSize/2);
@@ -125,6 +129,8 @@ public class UI {
 				g2.drawImage(keyImage, (gp.tileSize/2)-5, (gp.tileSize/2)-5, iconSize, iconSize, null);
 				g2.drawString("x "+gp.player.keyCount, 55, 50);
 				
+				g2.drawImage(swordImage, (gp.tileSize/2)-5, (gp.tileSize/2)+5+iconSize, iconSize, iconSize, null);
+				g2.drawString("x "+gp.player.swordCount, 55, 60+iconSize);
 			}
 			
 			playTime += (double)1/60;
