@@ -21,9 +21,9 @@ public class Player extends Entity {
 	public int swordCount = 0;
 	int standCounter = 0;
 	
-	public Player(GamePanel gp, InputHandler ih) {
+	public Player(GamePanel gp, InputHandler input) {
 		this.gp = gp;
-		this.inputHandler = ih;
+		this.inputHandler = input;
 		
 		screenX = gp.screenWidth/2 - (gp.tileSize/2);
 		screenY = gp.screenHeight/2 - (gp.tileSize/2);
@@ -91,7 +91,7 @@ public class Player extends Entity {
 			
 			if(standCounter == 20) {
 				standCounter = 0;
-				//spriteNum = 0; //Reset to standing sprite position
+				spriteNum = 0; //Reset to standing sprite position
 			}
 		}
 	}

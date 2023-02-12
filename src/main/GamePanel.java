@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	//System
 	TileManager tileManager = new TileManager(this);
-	InputHandler keyHandler = new InputHandler();
+	InputHandler inputHandler = new InputHandler();
 	Sound music = new Sound();
 	Sound sfx = new Sound();
 	public CollisionChecker collisionChecker = new CollisionChecker(this);
@@ -47,14 +47,14 @@ public class GamePanel extends JPanel implements Runnable {
 	double drawStart;
 	
 	//Entity and Object
-	public Player player = new Player(this, keyHandler);
+	public Player player = new Player(this, inputHandler);
 	public SuperObject obj[] = new SuperObject[50];
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true);
-		this.addKeyListener(keyHandler);
+		this.addKeyListener(inputHandler);
 		this.setFocusable(true);
 	}
 
@@ -99,7 +99,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public void update() {
 		player.update();
 		
-		debug = keyHandler.debugMode;
+		debug = inputHandler.debugMode;
 	}
 	
 	public void paintComponent(Graphics g) {
