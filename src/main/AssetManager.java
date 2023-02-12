@@ -41,15 +41,13 @@ public class AssetManager {
 		set("key", 8, 41);
 		
 		set("door", 10, 12);
-		set("door", 12, 23);
 		set("door", 30, 40);
+		set("door", 8, 28);
 		
 		set("spider", 31, 38);
-		set("spider", 36, 30);
-		set("spider", 8, 28);
+		set("spider", 12, 23);
 		
 		set("sword", 23, 7);
-		set("sword", 27, 27);
 		set("sword", 38, 8);
 		
 		set("boots", 37, 42);
