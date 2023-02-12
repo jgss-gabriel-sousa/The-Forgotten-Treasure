@@ -41,7 +41,9 @@ public class Player extends Entity {
 		solidArea.height = 16;
 		
 		setDefaultValues();
-		getPlayerImage();
+
+		setBaseSprites(3);
+		getBaseSprites("player", gp);
 	}
 	
 	void setDefaultValues() {
@@ -50,37 +52,7 @@ public class Player extends Entity {
 		speed = 4;
 		direction = "down";
 	}
-	
-	void getPlayerImage() {		
-		up1 = setup("player_up_1");
-		up2 = setup("player_up_2");
-		up3 = setup("player_up_3");
-		down1 = setup("player_down_1");
-		down2 = setup("player_down_2");
-		down3 = setup("player_down_3");
-		left1 = setup("player_left_1");
-		left2 = setup("player_left_2");
-		left3 = setup("player_left_3");
-		right1 = setup("player_right_1");
-		right2 = setup("player_right_2");
-		right3 = setup("player_right_3");
-	}
-	
-	BufferedImage setup(String imageName) {
-		UtilityTool uTool = new UtilityTool();
-		BufferedImage image = null;
 		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/player/"+imageName+".png"));
-			image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-			
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-		
-		return image;
-	}
-	
 	void checkCollision() {
 		collisionOn = false;
 		
@@ -112,8 +84,8 @@ public class Player extends Entity {
 			if(spriteCounter > (int)(8/(speed/4))) { //Change sprite after every 12 frames
 				spriteNum++;
 
-				if(spriteNum > 3) {
-					spriteNum = 1;
+				if(spriteNum == up.length) {
+					spriteNum = 0;
 				}
 				spriteCounter = 0;
 			}
@@ -123,7 +95,7 @@ public class Player extends Entity {
 			
 			if(standCounter == 20) {
 				standCounter = 0;
-				spriteNum = 1; //Reset to standing sprite position
+				//spriteNum = 0; //Reset to standing sprite position
 			}
 		}
 	}
@@ -191,26 +163,10 @@ public class Player extends Entity {
 	public void draw(Graphics2D g2) {
 		BufferedImage image = null;
 		
-		if(direction == "up") {
-			if(spriteNum == 1)	image = up1;
-			if(spriteNum == 2)	image = up2;
-			if(spriteNum == 3)	image = up3;
-		}
-		if(direction == "down") {
-			if(spriteNum == 1)	image = down1;
-			if(spriteNum == 2)	image = down2;
-			if(spriteNum == 3)	image = down3;
-		}
-		if(direction == "left") {
-			if(spriteNum == 1)	image = left1;
-			if(spriteNum == 2)	image = left2;
-			if(spriteNum == 3)	image = left3;
-		}
-		if(direction == "right") {
-			if(spriteNum == 1)	image = right1;
-			if(spriteNum == 2)	image = right2;
-			if(spriteNum == 3)	image = right3;
-		}
+		if(direction == "up") 	 image = up[spriteNum];
+		if(direction == "down")  image = down[spriteNum];
+		if(direction == "left")	 image = left[spriteNum];
+		if(direction == "right") image = right[spriteNum];
 		
 		g2.drawImage(image, screenX, screenY, null);
 		
