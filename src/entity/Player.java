@@ -108,11 +108,10 @@ public class Player extends Entity {
 			checkCollision();
 			
 			spriteCounter++;
-			if(spriteCounter > 8) { //Change sprite after every 12 frames
-				if(spriteNum < 3) {
-					spriteNum++;
-				}
-				else if(spriteNum == 3) {
+			if(spriteCounter > (int)(8/(speed/4))) { //Change sprite after every 12 frames
+				spriteNum++;
+
+				if(spriteNum > 3) {
 					spriteNum = 1;
 				}
 				spriteCounter = 0;
@@ -171,10 +170,26 @@ public class Player extends Entity {
 	public void draw(Graphics2D g2) {
 		BufferedImage image = null;
 		
-		if(direction == "up")		image = spriteNum == 1 ? up1 : up2;
-		if(direction == "down")		image = spriteNum == 1 ? down1 : down2;
-		if(direction == "left")		image = spriteNum == 1 ? left1 : left2;
-		if(direction == "right")	image = spriteNum == 1 ? right1 : right2;
+		if(direction == "up") {
+			if(spriteNum == 1)	image = up1;
+			if(spriteNum == 2)	image = up2;
+			if(spriteNum == 3)	image = up3;
+		}
+		if(direction == "down") {
+			if(spriteNum == 1)	image = down1;
+			if(spriteNum == 2)	image = down2;
+			if(spriteNum == 3)	image = down3;
+		}
+		if(direction == "left") {
+			if(spriteNum == 1)	image = left1;
+			if(spriteNum == 2)	image = left2;
+			if(spriteNum == 3)	image = left3;
+		}
+		if(direction == "right") {
+			if(spriteNum == 1)	image = right1;
+			if(spriteNum == 2)	image = right2;
+			if(spriteNum == 3)	image = right3;
+		}
 		
 		g2.drawImage(image, screenX, screenY, null);
 		
