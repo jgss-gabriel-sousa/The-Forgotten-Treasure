@@ -13,8 +13,8 @@ import tile.TileManager;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable {
-	// Screen Settings
 	
+	// Screen Settings
 	final int originalTileSize = 16;	//16x16 Default Tile Sizes
 	final int scale = 3;
 	
@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	//System
 	TileManager tileManager = new TileManager(this);
-	InputHandler inputHandler = new InputHandler();
+	InputHandler inputHandler = new InputHandler(this);
 	Sound music = new Sound();
 	Sound sfx = new Sound();
 	public CollisionChecker collisionChecker = new CollisionChecker(this);
@@ -45,6 +45,12 @@ public class GamePanel extends JPanel implements Runnable {
 	double[] drawTimes = new double[60];
 	int drawIndex = 0;
 	double drawStart;
+	
+	//Game States
+	public int gameState;
+	public final int MAIN_MENU_STATE = 0;
+	public final int PLAY_STATE = 1;
+	public final int PAUSE_STATE = 2;
 	
 	//Entity and Object
 	public Player player = new Player(this, inputHandler);
@@ -61,6 +67,8 @@ public class GamePanel extends JPanel implements Runnable {
 	public void setupGame() {
 		assetManager.setObject();
 		playMusic(music.BGM);
+		
+		gameState = PLAY_STATE;
 	}
 	
 	public void startGameThread() {
@@ -97,9 +105,13 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 	
 	public void update() {
-		player.update();
 		
-		debug = inputHandler.debugMode;
+		if(gameState == PLAY_STATE) {
+			player.update();
+		}
+		if(gameState == PAUSE_STATE) {
+			;
+		}
 	}
 	
 	public void paintComponent(Graphics g) {

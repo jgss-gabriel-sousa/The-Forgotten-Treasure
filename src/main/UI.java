@@ -38,25 +38,42 @@ public class UI {
 		messageOn = true;
 	}
 	
-	void debugUI(Graphics2D g2) {
-		if(gp.debug) {
-			g2.setColor(Color.white);
-			g2.setFont(g2.getFont().deriveFont(10F));
-			int i = 1;
-			g2.drawString("Time: "+dFormat.format(playTime), 5, i++*10);
-			g2.drawString("Player Speed: "+gp.player.speed, 5, i++*10);
-			g2.drawString("Player Direction: "+gp.player.direction, 5, i++*10);
-			g2.drawString("Player Sprite: "+gp.player.spriteNum, 5, i++*10);
-			g2.drawString("Player Key Count: "+gp.player.keyCount, 5, i++*10);
-			g2.drawString("Player Sword Count: "+gp.player.swordCount, 5, i++*10);
-			g2.drawString("Draw Time: "+dFormat3.format(gp.drawTime/10000000)+"ms", 5, i++*10);
-			int xPos = gp.player.worldX + (gp.tileSize/2);
-			int yPos = gp.player.worldY + (gp.tileSize/2);
-			int xTile = xPos / gp.tileSize;
-			int yTile = yPos / gp.tileSize;
-			g2.drawString("Position: "+xPos+", "+yPos, 5, i++*10);
-			g2.drawString("Tile: "+xTile+", "+yTile, 5, i++*10);
-		}
+	void drawDebug(Graphics2D g2) {
+		g2.setColor(Color.white);
+		g2.setFont(g2.getFont().deriveFont(10F));
+		int i = 1;
+		g2.drawString("Time: "+dFormat.format(playTime), 5, i++*10);
+		g2.drawString("Player Speed: "+gp.player.speed, 5, i++*10);
+		g2.drawString("Player Direction: "+gp.player.direction, 5, i++*10);
+		g2.drawString("Player Sprite: "+gp.player.spriteNum, 5, i++*10);
+		g2.drawString("Player Key Count: "+gp.player.keyCount, 5, i++*10);
+		g2.drawString("Player Sword Count: "+gp.player.swordCount, 5, i++*10);
+		g2.drawString("Draw Time: "+dFormat3.format(gp.drawTime/10000000)+"ms", 5, i++*10);
+		int xPos = gp.player.worldX + (gp.tileSize/2);
+		int yPos = gp.player.worldY + (gp.tileSize/2);
+		int xTile = xPos / gp.tileSize;
+		int yTile = yPos / gp.tileSize;
+		g2.drawString("Position: "+xPos+", "+yPos, 5, i++*10);
+		g2.drawString("Tile: "+xTile+", "+yTile, 5, i++*10);
+	}
+	
+	void drawPause(Graphics2D g2) {
+		g2.setFont(g2.getFont().deriveFont(30F));
+
+		String text = "Paused";
+		int textLength = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+		int textHeigth = (int)g2.getFontMetrics().getStringBounds(text, g2).getHeight();
+		int x = gp.screenWidth/2 - textLength/2;
+		int y = gp.tileSize*2;
+
+		g2.setColor(Color.darkGray);
+		g2.fillRect(x-5,y-textHeigth,textLength+10,textHeigth+10);
+		
+		g2.setColor(Color.black);
+		g2.drawRect(x-5,y-textHeigth,textLength+10,textHeigth+10);
+
+		g2.setColor(Color.white);
+		g2.drawString(text, x, y);
 	}
 	
 	public void draw(Graphics2D g2) {
@@ -105,14 +122,19 @@ public class UI {
 			x = gp.screenWidth/2 - textLength/2;
 			y = (gp.tileSize*3)+10;
 			g2.drawString(text, x, y);
-
-			debugUI(g2);
 			
 			gp.gameThread = null;
 		}
 		else {
+			if(gp.gameState == gp.PAUSE_STATE) {
+				drawPause(g2);
+			}
+			else {
+				playTime += (double)1/60;
+			}
+			
 			if(gp.debug) {
-				debugUI(g2);
+				drawDebug(g2);
 			}
 			else {
 				g2.setColor(Color.darkGray);
@@ -132,12 +154,8 @@ public class UI {
 				g2.drawImage(swordImage, (gp.tileSize/2)-5, (gp.tileSize/2)+5+iconSize, iconSize, iconSize, null);
 				g2.drawString("x "+gp.player.swordCount, 55, 60+iconSize);
 			}
-			
-			playTime += (double)1/60;
 
-			
 			if(messageOn) {
-				
 				g2.setFont(g2.getFont().deriveFont(30F));
 				
 				textLength = (int)g2.getFontMetrics().getStringBounds(message, g2).getWidth();
@@ -161,6 +179,6 @@ public class UI {
 					messageOn = false;
 				}
 			}
-		}	
+		}
 	}
 }

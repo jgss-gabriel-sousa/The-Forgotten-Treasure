@@ -4,8 +4,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class InputHandler implements KeyListener {
+	GamePanel gp;
 	public boolean upPressed, downPressed, leftPressed, rightPressed;
-	public boolean debugMode = false;
+	
+	public InputHandler(GamePanel gp) {
+		this.gp = gp;
+	}
 	
 	@Override
 	public void keyTyped(KeyEvent e){}
@@ -29,11 +33,21 @@ public class InputHandler implements KeyListener {
 			rightPressed = true;
 		}
 		
-		if(code == KeyEvent.VK_QUOTE) {
-			if(debugMode) 
-				debugMode = false;
-			else 
-				debugMode = true;
+		if(code == KeyEvent.VK_P) {
+			if(gp.gameState == gp.PLAY_STATE) {
+				gp.gameState = gp.PAUSE_STATE;
+			}
+			else if(gp.gameState == gp.PAUSE_STATE) {
+				gp.gameState = gp.PLAY_STATE;
+			}
+			
+		}
+		
+		if(code == KeyEvent.VK_QUOTE) {			
+			if(gp.debug)
+				gp.debug = false;
+			else
+				gp.debug = true;
 		}
 	}
 
