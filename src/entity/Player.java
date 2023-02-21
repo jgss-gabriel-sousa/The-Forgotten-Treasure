@@ -1,13 +1,18 @@
 package entity;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import main.GamePanel;
 import main.InputHandler;
 import main.Sound;
+import object.OBJ_Key;
+import object.OBJ_Shield_Wood;
+import object.OBJ_Sword_Normal;
 
 public class Player extends Entity {
 	GamePanel gp;
@@ -17,11 +22,15 @@ public class Player extends Entity {
 	public final int screenX;
 	public final int screenY;
 	
-	public int keyCount = 0;
-	public int swordCount = 0;
 	int standCounter = 0;
+	public boolean collisionWithNPC = false;
+	public boolean attackCanceled = false;
+	public ArrayList<Entity> inventory = new ArrayList<>();
+	public final int maxInventorySize = 20;
 	
 	public Player(GamePanel gp, InputHandler input) {
+		super(gp);
+		
 		this.gp = gp;
 		this.inputHandler = input;
 		
@@ -29,17 +38,41 @@ public class Player extends Entity {
 		screenY = gp.screenHeight/2 - (gp.tileSize/2);
 		
 		solidArea = new Rectangle();
-		solidArea.x = 10;
-		solidArea.y = 30;
+		solidArea.x = 8;
+		solidArea.y = 16;
 		solidAreaDefaultX = solidArea.x;
 		solidAreaDefaultY = solidArea.y;
-		solidArea.width = 28;
-		solidArea.height = 16;
+		solidArea.width = 32;
+		solidArea.height = 32;
+		
+		attackArea.width = 32;
+		attackArea.height = 32;
 		
 		setDefaultValues();
+		setItems();
 
 		setBaseSprites(3);
-		getBaseSprites("player", gp);
+		getBaseSprites("/player/","player");
+		//getPlayerAttackImage();
+
+		weapon_up = setup("/player/"+currentWeapon.id+"_up");
+		weapon_down = setup("/player/"+currentWeapon.id+"_down");
+		weapon_left = setup("/player/"+currentWeapon.id+"_left");
+		weapon_right = setup("/player/"+currentWeapon.id+"_right");
+	}
+	
+	void getPlayerAttackImage(){
+		attack_up = new BufferedImage[2];
+		attack_down = new BufferedImage[2];
+		attack_left = new BufferedImage[2];
+		attack_right = new BufferedImage[2];
+		
+		for(int i = 0; i < 2; i++) {
+			attack_up[i] = setupResize("/player/attack_up_"+i,gp.tileSize,gp.tileSize*2);
+			attack_down[i] = setupResize("/player/attack_down_"+i,gp.tileSize,gp.tileSize*2);
+			attack_left[i] = setupResize("/player/attack_left_"+i,gp.tileSize*2,gp.tileSize);
+			attack_right[i] = setupResize("/player/attack_right_"+i,gp.tileSize*2,gp.tileSize);
+		}
 	}
 	
 	void setDefaultValues() {
@@ -47,6 +80,36 @@ public class Player extends Entity {
 		worldY = gp.tileSize * 21;
 		speed = 4;
 		direction = "down";
+		
+		maxHP = 6;
+		hp = maxHP;
+		
+		level = 1;
+		strength = 1;
+		dexterity = 1;
+		exp = 0;
+		nextLevelExp = 5;
+		coin = 0;
+		currentWeapon = new OBJ_Sword_Normal(gp);
+		currentShield = new OBJ_Shield_Wood(gp);
+		
+		attack = getAttackValue();
+		defense = getDefenseValue();
+	}
+	
+	void setItems() {
+		inventory.add(currentWeapon);
+		inventory.add(currentShield);
+		inventory.add(new OBJ_Key(gp));
+		inventory.add(new OBJ_Key(gp));
+	}
+	
+	int getAttackValue() {
+		return strength * currentWeapon.attackValue;
+	}
+	
+	int getDefenseValue() {
+		return dexterity * currentShield.defenseValue;
 	}
 		
 	void checkCollision() {
@@ -54,20 +117,46 @@ public class Player extends Entity {
 		
 		gp.collisionChecker.checkTile(this);
 		
+		//Check OBJ Collision
 		int objIndex = gp.collisionChecker.checkObject(this, true);
 		pickUpObject(objIndex);
 		
-		if(!collisionOn) {
+		//Check NPC Collision
+		int npcIndex = gp.collisionChecker.checkEntity(this, gp.npc);
+		interactNPC(npcIndex);
+
+		//Check Monster Collision
+		int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
+		contactMonster(monsterIndex);
+
+		//Check Events
+		gp.eventHandler.checkEvent();
+		
+		if(!collisionOn && !inputHandler.enterPressed) {
 			if(direction == "up") 		worldY -= speed;
 			if(direction == "down") 	worldY += speed;
 			if(direction == "left") 	worldX -= speed;
 			if(direction == "right") 	worldX += speed;
 		}
 	}
-	
+
 	public void update() {
-		if(inputHandler.upPressed == true || inputHandler.downPressed == true ||
-				inputHandler.leftPressed == true || inputHandler.rightPressed == true) {
+		if(invincible) {
+			invincibleCounter++;
+			if(invincibleCounter > 60) {
+				invincible = false;
+				invincibleCounter = 0;
+			}
+		}
+		
+		if(attacking) {
+			attack();
+		}
+		else if(inputHandler.upPressed || 
+			inputHandler.downPressed ||
+			inputHandler.leftPressed || 
+			inputHandler.rightPressed || 
+			inputHandler.enterPressed) {
 			
 			if(inputHandler.upPressed) 		direction = "up";
 			if(inputHandler.downPressed) 	direction = "down";
@@ -75,6 +164,15 @@ public class Player extends Entity {
 			if(inputHandler.rightPressed)	direction = "right";
 			
 			checkCollision();
+			
+			if(inputHandler.enterPressed && !attackCanceled) {
+				gp.playSFX(gp.sfx.SWING_WEAPON);
+				attacking = true;
+				spriteCounter = 0;
+			}
+			
+			attackCanceled = false;
+			gp.inputHandler.enterPressed = false;
 			
 			spriteCounter++;
 			if(spriteCounter > (int)(8/(speed/4))) { //Change sprite after every 12 frames
@@ -96,80 +194,194 @@ public class Player extends Entity {
 		}
 	}
 	
+	void attack() {
+		spriteCounter++;
+		
+		if(spriteCounter <= 5) {
+			spriteNum = 0;
+		}
+		else if(spriteCounter <= 25) {
+			spriteNum = 1;
+			
+			int currentWorldX = worldX;
+			int currentWorldY = worldY;
+			int solidAreaWidth = solidArea.width;
+			int solidAreaHeight = solidArea.height;
+			
+			if(direction == "up")		worldY -= attackArea.height;
+			if(direction == "down")		worldY += attackArea.height;
+			if(direction == "left")		worldX -= attackArea.width;
+			if(direction == "right")	worldX += attackArea.width;
+			
+			solidArea.width = attackArea.width;
+			solidArea.height = attackArea.height;
+			
+			int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
+			damageMonster(monsterIndex);
+			
+			worldX = currentWorldX;
+			worldY = currentWorldY;
+			solidArea.width = solidAreaWidth;
+			solidArea.height = solidAreaHeight;
+		}
+		else{
+			spriteNum = 0;
+			spriteCounter = 0;
+			attacking = false;
+		}
+	}
+
 	void pickUpObject(int index) {
-		if(index != -1) {			
-			String objectName = gp.obj[index].name;
+		if(index == -1) return;
+	}
+	
+	void interactNPC(int index) {
+		if(index == -1) {
+			collisionWithNPC = false;
+			return;
+		}
+		
+		collisionWithNPC = true;
+		
+		if(gp.inputHandler.enterPressed) {
+			attackCanceled = true;
+			gp.gameState = gp.DIALOGUE_STATE;
+			gp.npc[index].speak();
+		}
+	}
+	
+	void contactMonster(int i) {
+		if(i == -1) return;
+		
+		if(!invincible && !gp.monster[i].dying) {
+			gp.playSFX(gp.sfx.RECEIVE_DMG);
 			
-			switch(objectName) {
-			case "Key":
-				gp.playSFX(sound.COIN);
-				keyCount++;
-				gp.obj[index] = null;
-				gp.ui.showMessage("You got a key!");
-				break;
-				
-			case "Sword":
-				gp.playSFX(sound.COIN);
-				swordCount++;
-				gp.obj[index] = null;
-				gp.ui.showMessage("You got a sword!");
-				break;
-				
-			case "Door":
-				if(keyCount > 0) {
-					gp.playSFX(sound.UNLOCK);
-					gp.obj[index] = null;
-					keyCount--;
-					gp.ui.showMessage("You opened the door!");
-				}
-				else {
-					gp.ui.showMessage("You need a key!");
-				}
-				break;
-				
-			case "Spider":
-				if(swordCount > 0) {
-					gp.playSFX(sound.CUT);
-					gp.obj[index] = null;
-					swordCount--;
-					gp.ui.showMessage("You sliced the webs!");
-				}
-				else {
-					gp.ui.showMessage("You need a sword!");
-				}
-				break;
-				
-				
-			case "Boots":
-				gp.playSFX(sound.POWERUP);
-				speed += 2;
-				gp.obj[index] = null;
-				gp.ui.showMessage("Speed up!");
-				break;
+			int damage = gp.monster[i].attack - defense;
+			if(damage < 0) {
+				damage = 0;
+			}
+			hp -= damage;
 			
-			case "Chest":
-				gp.ui.gameFinished = true;
-				gp.stopMusic();
-				gp.playSFX(sound.FANFARE);
-				break;
+			invincible = true;
+		}
+	}
+
+	void damageMonster(int i) {
+		if(i == -1) return;
+		
+		if(!gp.monster[i].invincible) {
+			gp.playSFX(gp.sfx.HIT_MONSTER);
+			
+			int damage = attack - gp.monster[i].defense;
+			if(damage < 0) {
+				damage = 0;
+			}
+			gp.monster[i].hp -= damage;
+		
+			if(gp.monster[i].hp < 0) {
+				gp.monster[i].hp = 0;
+			}
+			
+			gp.ui.addMessage(damage+" damage!");
+			
+			gp.monster[i].invincible = true;
+			gp.monster[i].damageReaction();
+			
+			if(gp.monster[i].hp <= 0) {
+				gp.monster[i].dying = true;
+				gp.ui.addMessage(gp.monster[i].name+" has been killed! ("+gp.monster[i].exp+" xp)");
+				exp += gp.monster[i].exp;
+				checkLevelUp();
 			}
 		}
 	}
 	
+	void checkLevelUp() {
+		if(exp >= nextLevelExp) {
+			level++;
+			nextLevelExp = nextLevelExp*2;
+			maxHP += 2;
+			hp += 2;
+			strength++;
+			dexterity++;
+			attack = getAttackValue();
+			defense = getDefenseValue();
+			
+			gp.playSFX(gp.sfx.LEVEL_UP);
+			gp.ui.addMessage("Level Up!");
+		}
+	}
+
 	public void draw(Graphics2D g2) {
 		BufferedImage image = null;
+		BufferedImage weapon = null;
+		Boolean weaponDrawed = false;
+		int weaponX = solidArea.x + screenX;
+		int weaponY = solidArea.y + screenY;
+
+		if(attacking) {
+			if(direction == "up"){
+				weaponX -= attackArea.width/4;
+				weaponY -= attackArea.height;
+			}		
+			if(direction == "down") {
+				weaponX -= attackArea.width/4;
+				weaponY += attackArea.height-solidArea.y;
+			}
+			if(direction == "left") {
+				weaponX -= attackArea.width;
+				weaponY -= attackArea.height/4;
+			}
+			if(direction == "right"){
+				weaponX += attackArea.width-solidArea.y;
+				weaponY -= attackArea.height/4;
+			}	
+
+			if(direction == "up") 	 weapon = weapon_up;
+			if(direction == "down")  weapon = weapon_down;
+			if(direction == "left")	 weapon = weapon_left;
+			if(direction == "right") weapon = weapon_right;
+			
+			if(direction == "up" || direction == "left") {
+				g2.drawImage(weapon, weaponX, weaponY, null);
+				weaponDrawed = true;
+			}	
+		}
 		
 		if(direction == "up") 	 image = up[spriteNum];
 		if(direction == "down")  image = down[spriteNum];
 		if(direction == "left")	 image = left[spriteNum];
 		if(direction == "right") image = right[spriteNum];
 		
+		if(invincible) {
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+		}
+		
 		g2.drawImage(image, screenX, screenY, null);
+		
+		if(attacking && !weaponDrawed) {
+			g2.drawImage(weapon, weaponX, weaponY, null);
+		}
+		
+		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 		
 		if(gp.debug) {
 			//Player Collision
 			g2.setColor(Color.red);
 			g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+
+			
+			g2.setColor(Color.yellow);
+			
+			int x = solidArea.x + screenX;
+			int y = solidArea.y + screenY;
+			
+			if(direction == "up")		y -= attackArea.height;
+			if(direction == "down")		y += attackArea.height;
+			if(direction == "left")		x -= attackArea.width;
+			if(direction == "right")	x += attackArea.width;
+				
+			g2.drawRect(x, y, attackArea.width, attackArea.height);
 		}
 	}
 }

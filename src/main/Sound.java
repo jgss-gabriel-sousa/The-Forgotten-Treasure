@@ -16,7 +16,11 @@ public class Sound {
 	public final int POWERUP = 2;
 	public final int UNLOCK = 3;
 	public final int FANFARE = 4;
-	public final int CUT = 5;
+	public final int HIT_MONSTER = 5;
+	public final int RECEIVE_DMG = 6;
+	public final int SWING_WEAPON = 7;
+	public final int LEVEL_UP = 8;
+	public final int CURSOR = 9;
 	
 	public Sound() {
 		soundURL[BGM] = getClass().getResource("/sound/bgm.wav");
@@ -24,7 +28,11 @@ public class Sound {
 		soundURL[POWERUP] = getClass().getResource("/sound/powerup.wav");
 		soundURL[UNLOCK] = getClass().getResource("/sound/unlock.wav");
 		soundURL[FANFARE] = getClass().getResource("/sound/fanfare.wav");
-		soundURL[CUT] = getClass().getResource("/sound/cut.wav");
+		soundURL[HIT_MONSTER] = getClass().getResource("/sound/hitmonster.wav");
+		soundURL[RECEIVE_DMG] = getClass().getResource("/sound/receivedamage.wav");
+		soundURL[SWING_WEAPON] = getClass().getResource("/sound/cuttree.wav");
+		soundURL[LEVEL_UP] = getClass().getResource("/sound/levelup.wav");
+		soundURL[CURSOR] = getClass().getResource("/sound/cursor.wav");
 	}
 	
 	public void setFile(int id) {
@@ -34,7 +42,7 @@ public class Sound {
 			clip.open(ais);
 
 			FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-			double gain = 0.15;
+			double gain = 0.05;
 			float dB = (float) (Math.log(gain) / Math.log(10.0) * 20.0);
 			gainControl.setValue(dB);
 			

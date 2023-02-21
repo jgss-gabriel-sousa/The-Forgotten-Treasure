@@ -1,22 +1,17 @@
 package object;
 
-import java.io.IOException;
+import java.awt.image.BufferedImage;
 
-import javax.imageio.ImageIO;
-
+import entity.Entity;
 import main.GamePanel;
 
-public class OBJ_Spider extends SuperObject {
+public class OBJ_Spider extends Entity {
 	public OBJ_Spider(GamePanel gp) {
-		name = "Spider";
+		super(gp);
 		
-		try {
-			image = ImageIO.read(getClass().getResourceAsStream("/objects/spider.png"));
-			uTool.scaleImage(image, gp.tileSize, gp.tileSize);
-			
-		}catch(IOException e) {
-			e.printStackTrace();
-		}
+		name = "Spider";
+		down = new BufferedImage[1];
+		down[0] = setup("/objects/spider.png");
 		collision = true;
 	}
 }
