@@ -11,6 +11,6 @@ public class OBJ_Chest extends Entity {
 		
 		name = "Chest";
 		down = new BufferedImage[1];
-		down[0] = setup("/objects/chest.png");
+		down[0] = setup("/objects/chest");
 	}
 }

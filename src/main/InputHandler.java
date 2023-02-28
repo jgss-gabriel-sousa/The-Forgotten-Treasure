@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class InputHandler implements KeyListener {
 	GamePanel gp;
-	public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed;
+	public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
 	
 	int dialogueDelay = 0;
 	
@@ -95,6 +95,10 @@ public class InputHandler implements KeyListener {
 		if(code == KeyEvent.VK_C) {
 			gp.gameState = gp.CHARACTER_STATE;
 		}
+		
+		if(code == KeyEvent.VK_F) {
+			shotKeyPressed = true;
+		}
 	}
 	
 	void pauseState(int code) {
@@ -110,7 +114,7 @@ public class InputHandler implements KeyListener {
 	}
 	
 	void characterState(int code) {
-		if(code == KeyEvent.VK_C) {
+		if(code == KeyEvent.VK_C ||  code == KeyEvent.VK_ESCAPE) {
 			gp.gameState = gp.PLAY_STATE;
 			gp.playSFX(gp.sfx.CURSOR);
 		}
@@ -140,6 +144,9 @@ public class InputHandler implements KeyListener {
 			
 			gp.playSFX(gp.sfx.CURSOR);
 		}
+		if(code == KeyEvent.VK_ENTER) {
+			gp.player.selectItem();
+		}
 	}
 	
 	@Override
@@ -159,6 +166,10 @@ public class InputHandler implements KeyListener {
 		
 		if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
 			rightPressed = false;
+		}
+		
+		if(code == KeyEvent.VK_F) {
+			shotKeyPressed = false;
 		}
 	}
 }

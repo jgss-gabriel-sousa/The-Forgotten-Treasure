@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import entity.Entity;
 import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
 
 public class UI {
 	GamePanel gp;
@@ -22,6 +23,7 @@ public class UI {
 	Font maruMonica, purisaBold, arial;
 	
 	BufferedImage heart_full, heart_half, heart_blank;
+	BufferedImage crystal_full, crystal_blank;
 	
 	public boolean messageOn = false;
 	ArrayList<String> message = new ArrayList<>();
@@ -60,6 +62,10 @@ public class UI {
 		heart_full = heart.image;
 		heart_half = heart.image2;
 		heart_blank = heart.image3;
+		
+		Entity crystal = new OBJ_ManaCrystal(gp);
+		crystal_full = crystal.image;
+		crystal_blank = crystal.image2;
 	}
 	
 	public void addMessage(String text) {
@@ -267,6 +273,8 @@ public class UI {
 		textY += lineHeight;
 		g2.drawString("HP", textX, textY);
 		textY += lineHeight;
+		g2.drawString("Mana", textX, textY);
+		textY += lineHeight;
 		g2.drawString("Strength", textX, textY);
 		textY += lineHeight;
 		g2.drawString("Dexterity", textX, textY);
@@ -297,6 +305,11 @@ public class UI {
 		textY += lineHeight;
 
 		value = String.valueOf(gp.player.hp + "/" + gp.player.maxHP);
+		textX = getXforAlignToRightText(value, tailX);
+		g2.drawString(value, textX, textY);
+		textY += lineHeight;
+		
+		value = String.valueOf(gp.player.mana + "/" + gp.player.maxMana);
 		textX = getXforAlignToRightText(value, tailX);
 		g2.drawString(value, textX, textY);
 		textY += lineHeight;
@@ -347,6 +360,13 @@ public class UI {
 		int slotSize = gp.tileSize+3;
 		
 		for(int i = 0; i < gp.player.inventory.size(); i++) {
+			
+			if(gp.player.inventory.get(i) == gp.player.currentWeapon ||
+			   gp.player.inventory.get(i) == gp.player.currentShield) {
+				g2.setColor(new Color(240,190,90));
+				g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
+			}
+			
 			g2.drawImage(gp.player.inventory.get(i).down[0], slotX, slotY, null);
 			
 			slotX += slotSize;
@@ -371,7 +391,6 @@ public class UI {
 		int dFrameHeight = gp.tileSize*3;
 		int dFrameX = frameX;
 		int dFrameY = frameY + frameHeight;
-		drawWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
 		
 		int textX = dFrameX + 20;
 		int textY = dFrameY + gp.tileSize;
@@ -382,15 +401,27 @@ public class UI {
 		int itemIndex = getItemIndexOnSlot();
 		
 		if(itemIndex < gp.player.inventory.size()) {
+			drawWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
+			g2.setFont(purisaBold);
+			g2.setColor(Color.white);
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+			
+			g2.drawString(gp.player.inventory.get(itemIndex).name, textX, textY);
+			textY += 32;
+
+			g2.setFont(maruMonica);
+			g2.setFont(g2.getFont().deriveFont(16F));
 			
 			for(String line: gp.player.inventory.get(itemIndex).description.split("\n")) {
 				g2.drawString(line, textX, textY);
-				textY += 32;
+				textY += 20;
 			}
 		}
 	}
 	
-	int getItemIndexOnSlot() {
+	public int getItemIndexOnSlot() {
 		return slotCol + (slotRow*5);
 	}
 	
@@ -406,8 +437,8 @@ public class UI {
 	}
 	
 	void drawPlayerHP(){
-		int x = gp.tileSize/2;
-		int y = gp.tileSize/2;
+		int x = gp.tileSize/4;
+		int y = gp.tileSize/4;
 		int i = 0;
 		
 		while(i < gp.player.maxHP/2) {
@@ -416,8 +447,8 @@ public class UI {
 			x += gp.tileSize;
 		}
 		
-		x = gp.tileSize/2;
-		y = gp.tileSize/2;
+		x = gp.tileSize/4;
+		y = gp.tileSize/4;
 		i = 0;
 		
 		while(i < gp.player.hp) {
@@ -428,6 +459,27 @@ public class UI {
 			}
 			i++;
 			x += gp.tileSize;
+		}
+		
+		//Draw Mana
+		x = gp.tileSize/4;
+		y = (int) (gp.tileSize*1.3);
+		i = 0;
+
+		while(i < gp.player.maxMana) {
+			g2.drawImage(crystal_blank, x, y, null);
+			i++;
+			x += gp.tileSize/1.4;
+		}
+		
+		x = gp.tileSize/4;
+		y = (int) (gp.tileSize*1.3);
+		i = 0;
+		
+		while(i < gp.player.mana) {
+			g2.drawImage(crystal_full, x, y, null);
+			i++;
+			x += gp.tileSize/1.4;
 		}
 	}
 	
@@ -473,6 +525,7 @@ public class UI {
 		if(gp.gameState == gp.PAUSE_STATE) {
 			drawPauseScreen();
 			drawPlayerHP();
+			drawMessage();
 		}
 		if(gp.gameState == gp.DIALOGUE_STATE) {
 			drawDialogueScreen();

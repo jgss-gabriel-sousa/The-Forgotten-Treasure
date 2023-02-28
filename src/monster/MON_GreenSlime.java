@@ -5,6 +5,10 @@ import java.util.Random;
 
 import entity.Entity;
 import main.GamePanel;
+import object.OBJ_Coin;
+import object.OBJ_Heart;
+import object.OBJ_ManaCrystal;
+import object.OBJ_Rock;
 
 public class MON_GreenSlime extends Entity {
 	GamePanel gp;
@@ -22,6 +26,7 @@ public class MON_GreenSlime extends Entity {
 		attack = 5;
 		defense = 0;
 		exp = 2;
+		projectile = new OBJ_Rock(gp);
 		
 		solidArea.x = 3;
 		solidArea.y = 18;
@@ -50,8 +55,7 @@ public class MON_GreenSlime extends Entity {
 	}
 	
 	public void setAction() {
-		Random random = new Random();
-		int i = random.nextInt(100)+1;
+		int i = new Random().nextInt(100)+1;
 		
 		actionLockCounter++;
 		
@@ -75,10 +79,31 @@ public class MON_GreenSlime extends Entity {
 			
 			actionLockCounter = 0;
 		}
+		
+		i = new Random().nextInt(100)+1;
+		if(i > 99 && !projectile.alive && shotSpeedCounter == 80) {
+			projectile.set(worldX, worldY, direction, true, this);
+			gp.projectiles.add(projectile);
+			shotSpeedCounter = 0;
+		}
 	}
 	
 	public void damageReaction() {
 		actionLockCounter = 0;
 		direction = gp.player.direction;
+	}
+	
+	public void checkDrop() {
+		int i = new Random().nextInt(100)+1;
+		
+		if(i <= 50) {
+			dropItem(new OBJ_Coin(gp));
+		}
+		else if(i <= 75) {
+			dropItem(new OBJ_Heart(gp));
+		}
+		else{
+			dropItem(new OBJ_ManaCrystal(gp));
+		}
 	}
 }

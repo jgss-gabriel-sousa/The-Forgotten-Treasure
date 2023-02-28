@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import main.GamePanel;
 import main.InputHandler;
 import main.Sound;
+import object.OBJ_Fireball;
 import object.OBJ_Key;
+import object.OBJ_Rock;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
 
@@ -45,9 +47,6 @@ public class Player extends Entity {
 		solidArea.width = 32;
 		solidArea.height = 32;
 		
-		attackArea.width = 32;
-		attackArea.height = 32;
-		
 		setDefaultValues();
 		setItems();
 
@@ -55,10 +54,14 @@ public class Player extends Entity {
 		getBaseSprites("/player/","player");
 		//getPlayerAttackImage();
 
-		weapon_up = setup("/player/"+currentWeapon.id+"_up");
-		weapon_down = setup("/player/"+currentWeapon.id+"_down");
-		weapon_left = setup("/player/"+currentWeapon.id+"_left");
-		weapon_right = setup("/player/"+currentWeapon.id+"_right");
+		getWeaponSprites();
+	}
+	
+	void getWeaponSprites(){
+		weapon_up = setup("/player/weapons/"+currentWeapon.id+"_up");
+		weapon_down = setup("/player/weapons/"+currentWeapon.id+"_down");
+		weapon_left = setup("/player/weapons/"+currentWeapon.id+"_left");
+		weapon_right = setup("/player/weapons/"+currentWeapon.id+"_right");
 	}
 	
 	void getPlayerAttackImage(){
@@ -83,7 +86,9 @@ public class Player extends Entity {
 		
 		maxHP = 6;
 		hp = maxHP;
-		
+		maxMana = 4;
+		mana = maxMana;
+		ammo = 10;
 		level = 1;
 		strength = 1;
 		dexterity = 1;
@@ -92,6 +97,7 @@ public class Player extends Entity {
 		coin = 0;
 		currentWeapon = new OBJ_Sword_Normal(gp);
 		currentShield = new OBJ_Shield_Wood(gp);
+		projectile = new OBJ_Fireball(gp);
 		
 		attack = getAttackValue();
 		defense = getDefenseValue();
@@ -105,6 +111,7 @@ public class Player extends Entity {
 	}
 	
 	int getAttackValue() {
+		attackArea = currentWeapon.attackArea;
 		return strength * currentWeapon.attackValue;
 	}
 	
@@ -192,6 +199,22 @@ public class Player extends Entity {
 				spriteNum = 0; //Reset to standing sprite position
 			}
 		}
+		
+		if(gp.inputHandler.shotKeyPressed && !projectile.alive && shotSpeedCounter == 80 && projectile.haveResource(this)) {
+			projectile.set(worldX, worldY, direction, true, this);
+			
+			gp.projectiles.add(projectile);
+			
+			projectile.subtractResource(this);
+			
+			shotSpeedCounter = 0;
+			
+			gp.playSFX(gp.sfx.EXPLOSION);
+		}
+		
+		if(shotSpeedCounter < 80) {
+			shotSpeedCounter++;
+		}
 	}
 	
 	void attack() {
@@ -217,7 +240,7 @@ public class Player extends Entity {
 			solidArea.height = attackArea.height;
 			
 			int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
-			damageMonster(monsterIndex);
+			damageMonster(monsterIndex, attack);
 			
 			worldX = currentWorldX;
 			worldY = currentWorldY;
@@ -231,8 +254,35 @@ public class Player extends Entity {
 		}
 	}
 
-	void pickUpObject(int index) {
-		if(index == -1) return;
+	void pickUpObject(int i) {
+		if(i == -1) return;
+
+		String text;
+		
+		//Pickup Only Items
+		if(gp.obj[i].type == TYPE_ITEM_PICKUP) {
+			
+			if(gp.obj[i].use(this)) {
+				gp.playSFX(gp.sfx.COIN);			
+				gp.obj[i] = null;
+			}
+		}
+		
+		//Inventory Items
+		else {			
+			if(inventory.size() != maxInventorySize) {
+				
+				inventory.add(gp.obj[i]);
+				gp.playSFX(gp.sfx.COIN);
+				text = "You got a "+gp.obj[i].name;
+			}
+			else {
+				text = "You cannot carry anymore";
+			}
+			
+			gp.ui.addMessage(text);
+			gp.obj[i] = null;
+		}
 	}
 	
 	void interactNPC(int index) {
@@ -266,7 +316,7 @@ public class Player extends Entity {
 		}
 	}
 
-	void damageMonster(int i) {
+	void damageMonster(int i, int attack) {
 		if(i == -1) return;
 		
 		if(!gp.monster[i].invincible) {
@@ -309,6 +359,32 @@ public class Player extends Entity {
 			
 			gp.playSFX(gp.sfx.LEVEL_UP);
 			gp.ui.addMessage("Level Up!");
+		}
+	}
+	
+	public void selectItem() {
+		int itemIndex = gp.ui.getItemIndexOnSlot();
+		
+		if(itemIndex < inventory.size()) {
+			Entity selectedItem = inventory.get(itemIndex);
+			
+			if(selectedItem.type == TYPE_ITEM_SWORD || selectedItem.type == TYPE_ITEM_AXE) {
+				currentWeapon = selectedItem;
+				attack = getAttackValue();
+				getWeaponSprites();
+				
+				gp.playSFX(gp.sfx.POWERUP);
+			}
+			if(selectedItem.type == TYPE_ITEM_SHIELD) {
+				currentShield = selectedItem;
+				defense = getDefenseValue();
+				
+				gp.playSFX(gp.sfx.POWERUP);
+			}
+			if(selectedItem.type == TYPE_ITEM_CONSUMABLE) {
+				if(selectedItem.use(this))
+					inventory.remove(itemIndex);
+			}
 		}
 	}
 

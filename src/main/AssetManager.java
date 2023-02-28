@@ -5,10 +5,16 @@ import java.util.Arrays;
 import entity.Entity;
 import entity.NPC_OldMan;
 import monster.MON_GreenSlime;
+import object.OBJ_Axe;
 import object.OBJ_Boots;
 import object.OBJ_Chest;
+import object.OBJ_Coin;
 import object.OBJ_Door;
+import object.OBJ_Heart;
 import object.OBJ_Key;
+import object.OBJ_ManaCrystal;
+import object.OBJ_Potion_Healing;
+import object.OBJ_Shield_Iron;
 import object.OBJ_Spider;
 import object.OBJ_Sword_Normal;
 
@@ -22,20 +28,23 @@ public class AssetManager {
 		this.gp = gp;
 	}
 	
-	void set(String type, int tileX, int tileY) {
-		String objs[] = {"key","door","chest","boots","spider","sword"};
-		String npcs[] = {"oldman"};
-		String monsters[] = {"greenSlime"};
+	void set(String type, String id, int tileX, int tileY) {		
+		Entity obj = null;
 		
-		if(Arrays.stream(objs).anyMatch(type::equals)) {
-			Entity obj = null;
+		if(type == "object") {
 			
-			if(type == "key") 		obj = new OBJ_Key(gp);
-			if(type == "door") 		obj = new OBJ_Door(gp);
-			if(type == "chest") 	obj = new OBJ_Chest(gp);
-			if(type == "boots")		obj = new OBJ_Boots(gp);
-			if(type == "spider")	obj = new OBJ_Spider(gp);
-			if(type == "sword")		obj = new OBJ_Sword_Normal(gp);
+			if(id == "key") 			obj = new OBJ_Key(gp);
+			if(id == "door") 			obj = new OBJ_Door(gp);
+			if(id == "chest") 			obj = new OBJ_Chest(gp);
+			if(id == "boots")			obj = new OBJ_Boots(gp);
+			if(id == "spider")			obj = new OBJ_Spider(gp);
+			if(id == "sword")			obj = new OBJ_Sword_Normal(gp);
+			if(id == "axe")				obj = new OBJ_Axe(gp);
+			if(id == "shieldIron")		obj = new OBJ_Shield_Iron(gp);
+			if(id == "potionHealing")	obj = new OBJ_Potion_Healing(gp);
+			if(id == "coin")			obj = new OBJ_Coin(gp);
+			if(id == "heart")			obj = new OBJ_Heart(gp);
+			if(id == "manaCrystal")		obj = new OBJ_ManaCrystal(gp);
 			
 			obj.worldX = tileX * gp.tileSize;
 			obj.worldY = tileY * gp.tileSize;
@@ -43,42 +52,48 @@ public class AssetManager {
 			gp.obj[objCounter] = obj;
 			objCounter++;
 		}
-		if(Arrays.stream(npcs).anyMatch(type::equals)) {
-			Entity npc = null;
+		if(type == "npc") {		
 			
-			if(type == "oldman")	npc = new NPC_OldMan(gp);
+			if(id == "oldman")	obj = new NPC_OldMan(gp);
 			
-			npc.worldX = tileX * gp.tileSize;
-			npc.worldY = tileY * gp.tileSize;
+			obj.worldX = tileX * gp.tileSize;
+			obj.worldY = tileY * gp.tileSize;
 			
-			gp.npc[npcCounter] = npc;
+			gp.npc[npcCounter] = obj;
 			npcCounter++;
 		}
-		if(Arrays.stream(monsters).anyMatch(type::equals)) {
-			Entity monster = null;
+		if(type == "monster") {	
 			
-			if(type == "greenSlime")	monster = new MON_GreenSlime(gp);
+			if(id == "greenSlime")	obj = new MON_GreenSlime(gp);
 			
-			monster.worldX = tileX * gp.tileSize;
-			monster.worldY = tileY * gp.tileSize;
+			obj.worldX = tileX * gp.tileSize;
+			obj.worldY = tileY * gp.tileSize;
 					
-			gp.monster[monsterCounter] = monster;
+			gp.monster[monsterCounter] = obj;
 			monsterCounter++;
 		}
 	}
 	
 	public void setObject() {
+		set("object","key", 21, 19);
+		set("object","coin", 25, 19);
+		set("object","coin", 26, 21);
+		set("object","axe", 33, 21);
+		set("object","shieldIron", 35, 21);
+		set("object","potionHealing", 22, 27);
+		set("object","heart", 22, 29);
+		set("object","manaCrystal", 22, 31);
 	}
 	
 	public void setNPC() {
-		set("oldman", 21, 21);
+		set("npc","oldman", 21, 21);
 	}
 	
 	public void setMonster() {
-		set("greenSlime", 23, 36);
-		set("greenSlime", 23, 37);
-		set("greenSlime", 24, 37);
-		set("greenSlime", 34, 42);
-		set("greenSlime", 38, 42);
+		set("monster","greenSlime", 23, 36);
+		set("monster","greenSlime", 23, 37);
+		set("monster","greenSlime", 24, 37);
+		set("monster","greenSlime", 34, 42);
+		set("monster","greenSlime", 38, 42);
 	}
 }

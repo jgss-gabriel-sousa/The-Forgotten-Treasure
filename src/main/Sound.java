@@ -21,6 +21,7 @@ public class Sound {
 	public final int SWING_WEAPON = 7;
 	public final int LEVEL_UP = 8;
 	public final int CURSOR = 9;
+	public final int EXPLOSION = 10;
 	
 	public Sound() {
 		soundURL[BGM] = getClass().getResource("/sound/bgm.wav");
@@ -33,6 +34,7 @@ public class Sound {
 		soundURL[SWING_WEAPON] = getClass().getResource("/sound/cuttree.wav");
 		soundURL[LEVEL_UP] = getClass().getResource("/sound/levelup.wav");
 		soundURL[CURSOR] = getClass().getResource("/sound/cursor.wav");
+		soundURL[EXPLOSION] = getClass().getResource("/sound/burning.wav");
 	}
 	
 	public void setFile(int id) {

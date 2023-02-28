@@ -12,5 +12,6 @@ public class OBJ_Key extends Entity {
 		name = "Key";
 		down = new BufferedImage[1];
 		down[0] = setup("/objects/key");
+		description = "It opens doors. Don't expect it to solve your\nemotional problems.";
 	}
 }

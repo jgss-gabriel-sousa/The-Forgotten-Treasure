@@ -15,7 +15,6 @@ import main.UtilityTool;
 public class Entity {
 	GamePanel gp;
 	
-	
 	public BufferedImage up[], down[], left[], right[];
 	public BufferedImage attack_up[], attack_down[], attack_left[], attack_right[];
 	public BufferedImage image, image2, image3;
@@ -42,6 +41,7 @@ public class Entity {
 	public int spriteNum = 0;
 	public int invincibleCounter = 0;
 	public int actionLockCounter = 0;
+	public int shotSpeedCounter = 0;
 	int dyingCounter = 0;
 	int hpBarCounter = 0;
 	
@@ -52,6 +52,9 @@ public class Entity {
 	public int speed = 1;
 	public int maxHP;
 	public int hp;
+	public int maxMana;
+	public int mana;
+	public int ammo;
 	public int level;
 	public int exp;
 	public int nextLevelExp;
@@ -62,29 +65,88 @@ public class Entity {
 	public int coin;
 	public Entity currentWeapon;
 	public Entity currentShield;
+	public Projectile projectile;
 	
 	//Item Attributes
+	public int value;
 	public int attackValue;
 	public int defenseValue;
 	public String description = "";
+	public int useCost;
 	
 	//Types
 	public final int TYPE_PLAYER = 0;
 	public final int TYPE_NPC = 1;
 	public final int TYPE_MONSTER = 2;
+	public final int TYPE_ITEM_SWORD = 10;
+	public final int TYPE_ITEM_AXE = 11;
+	public final int TYPE_ITEM_SHIELD = 12;
+	public final int TYPE_ITEM_CONSUMABLE = 13;
+	public final int TYPE_ITEM_PICKUP = 14;
 	
 	public Entity(GamePanel gp) {
 		this.gp = gp;
 	}
 	
-	void setBaseSprites(int qty) {
+	public boolean use(Entity entity) {return false;}
+	public void setAction() {}
+	public void damageReaction() {}
+	public boolean haveResource(Entity user) {return false;}
+	public void subtractResource(Entity user) {}
+	public void checkDrop() {}
+	
+	public void update() {
+		setAction();
+		
+		collisionOn = false;
+		gp.collisionChecker.checkTile(this);
+		gp.collisionChecker.checkObject(this, false);
+		gp.collisionChecker.checkEntity(this, gp.npc);
+		gp.collisionChecker.checkEntity(this, gp.monster);
+		boolean hitPlayer = gp.collisionChecker.checkPlayer(this);
+		
+		if(hitPlayer && this.type == TYPE_MONSTER) {
+			damagePlayer(attack);
+		}
+
+		if(!collisionOn) {
+			if(direction == "up") 		worldY -= speed;
+			if(direction == "down") 	worldY += speed;
+			if(direction == "left") 	worldX -= speed;
+			if(direction == "right") 	worldX += speed;
+		}
+		
+		spriteCounter++;
+		if(spriteCounter > 12) { //Change sprite after every 12 frames
+			spriteNum++;
+
+			if(spriteNum == up.length) {
+				spriteNum = 0;
+			}
+			spriteCounter = 0;
+		}
+		
+		if(invincible) {
+			invincibleCounter++;
+			if(invincibleCounter > 40) {
+				invincible = false;
+				invincibleCounter = 0;
+			}
+		}
+		
+		if(shotSpeedCounter < 80) {
+			shotSpeedCounter++;
+		}
+	}
+	
+	public void setBaseSprites(int qty) {
 		up = new BufferedImage[qty];
 		down = new BufferedImage[qty];
 		left = new BufferedImage[qty];
 		right = new BufferedImage[qty];
 	}
 	
-	void getBaseSprites(String folder, String name) {		
+	public void getBaseSprites(String folder, String name) {		
 		for(int i = 0; i < up.length; i++) {
 			up[i] = setup(folder+name+"_up_"+i);
 			down[i] = setup(folder+name+"_down_"+i);
@@ -111,13 +173,6 @@ public class Entity {
 		
 		return image;
 	}
-	
-	public void setAction() {
-		;
-	}
-	public void damageReaction() {
-		;
-	}
 
 	void speak() {
 		if(dialogues[dialogueIndex] == null) {
@@ -132,55 +187,32 @@ public class Entity {
 		if(gp.player.direction == "left")	direction = "right";
 		if(gp.player.direction == "right")	direction = "left";
 	}
+
+	void damagePlayer(int attack) {
+		if(!gp.player.invincible) {
+
+			int damage = attack - gp.player.defense;
+			if(damage < 0) {
+				damage = 0;
+			}
+			else {
+				gp.playSFX(gp.sfx.RECEIVE_DMG);
+				gp.player.invincible = true;
+			}
+			
+			gp.player.hp -= damage;
+		}
+	}
 	
-	public void update() {
-		setAction();
+	public void dropItem(Entity droppedItem) {
 		
-		collisionOn = false;
-		gp.collisionChecker.checkTile(this);
-		gp.collisionChecker.checkObject(this, false);
-		gp.collisionChecker.checkEntity(this, gp.npc);
-		gp.collisionChecker.checkEntity(this, gp.monster);
-		boolean hitPlayer = gp.collisionChecker.checkPlayer(this);
-		
-		if(hitPlayer && this.type == TYPE_MONSTER) {
-			if(!gp.player.invincible) {
-
-				int damage = attack - gp.player.defense;
-				if(damage < 0) {
-					damage = 0;
-				}
-				else {
-					gp.playSFX(gp.sfx.RECEIVE_DMG);
-					gp.player.invincible = true;
-				}
-				
-				gp.player.hp -= damage;
-			}
-		}
-
-		if(!collisionOn) {
-			if(direction == "up") 		worldY -= speed;
-			if(direction == "down") 	worldY += speed;
-			if(direction == "left") 	worldX -= speed;
-			if(direction == "right") 	worldX += speed;
-		}
-		
-		spriteCounter++;
-		if(spriteCounter > 12) { //Change sprite after every 12 frames
-			spriteNum++;
-
-			if(spriteNum == up.length) {
-				spriteNum = 0;
-			}
-			spriteCounter = 0;
-		}
-		
-		if(invincible) {
-			invincibleCounter++;
-			if(invincibleCounter > 40) {
-				invincible = false;
-				invincibleCounter = 0;
+		for(int i = 0; i < gp.obj.length; i++) {
+			
+			if(gp.obj[i] == null) {
+				gp.obj[i] = droppedItem;
+				gp.obj[i].worldX = worldX;
+				gp.obj[i].worldY = worldY;
+				break;
 			}
 		}
 	}
@@ -228,7 +260,7 @@ public class Entity {
 		
 		if(dying) dyingAnimation(g2);
 		
-		g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+		g2.drawImage(image, screenX, screenY, null);
 
 		changeAlpha(g2,1f);
 		
