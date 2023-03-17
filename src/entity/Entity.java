@@ -118,10 +118,10 @@ public class Entity {
 		int speed = generator.getParticleSpeed();
 		int duration = generator.getParticleDuration();
 		
-		Particle p1 = new Particle(gp, generator, color, size, speed, duration, -1, -1);
-		Particle p2 = new Particle(gp, generator, color, size, speed, duration, 1, -1);
-		Particle p3 = new Particle(gp, generator, color, size, speed, duration, -1, 1);
-		Particle p4 = new Particle(gp, generator, color, size, speed, duration, 1, 1);
+		Particle p1 = new Particle(gp, target, color, size, speed, duration, -1, -1);
+		Particle p2 = new Particle(gp, target, color, size, speed, duration, 1, -1);
+		Particle p3 = new Particle(gp, target, color, size, speed, duration, -1, 1);
+		Particle p4 = new Particle(gp, target, color, size, speed, duration, 1, 1);
 		gp.particles.add(p1);
 		gp.particles.add(p2);
 		gp.particles.add(p3);
