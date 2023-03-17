@@ -17,6 +17,8 @@ import object.OBJ_Potion_Healing;
 import object.OBJ_Shield_Iron;
 import object.OBJ_Spider;
 import object.OBJ_Sword_Normal;
+import tile_interactive.IT_Log;
+import tile_interactive.InteractiveTile;
 
 public class AssetManager {
 	GamePanel gp;
@@ -63,14 +65,23 @@ public class AssetManager {
 			npcCounter++;
 		}
 		if(type == "monster") {	
-			
 			if(id == "greenSlime")	obj = new MON_GreenSlime(gp);
 			
 			obj.worldX = tileX * gp.tileSize;
 			obj.worldY = tileY * gp.tileSize;
-					
+			
 			gp.monster[monsterCounter] = obj;
 			monsterCounter++;
+		}
+		if(type == "iTile") {
+			InteractiveTile iTile = null;
+			
+			if(id == "log")	iTile = new IT_Log(gp);
+			
+			iTile.worldX = tileX * gp.tileSize;
+			iTile.worldY = tileY * gp.tileSize;
+					
+			gp.iTiles.add(iTile);
 		}
 	}
 	
@@ -95,5 +106,12 @@ public class AssetManager {
 		set("monster","greenSlime", 24, 37);
 		set("monster","greenSlime", 34, 42);
 		set("monster","greenSlime", 38, 42);
+	}
+	
+	public void setInteractiveTiles() {
+		set("iTile","log", 23, 20);
+		set("iTile","log", 23, 19);
+		set("iTile","log", 23, 18);
+		set("iTile","log", 23, 17);
 	}
 }

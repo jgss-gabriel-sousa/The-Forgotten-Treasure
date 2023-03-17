@@ -95,6 +95,39 @@ public class Entity {
 	public void subtractResource(Entity user) {}
 	public void checkDrop() {}
 	
+
+	public Color getParticleColor() {
+		Color color = null;
+		return color;
+	}
+	public int getParticleSize() {
+		int size = 0;
+		return size;
+	}
+	public int getParticleSpeed() {
+		int speed = 0;
+		return speed;
+	}
+	public int getParticleDuration() {
+		int duration = 0;
+		return duration;
+	}
+	public void generateParticles(Entity generator, Entity target) {
+		Color color	= generator.getParticleColor();
+		int size = generator.getParticleSize();
+		int speed = generator.getParticleSpeed();
+		int duration = generator.getParticleDuration();
+		
+		Particle p1 = new Particle(gp, generator, color, size, speed, duration, -1, -1);
+		Particle p2 = new Particle(gp, generator, color, size, speed, duration, 1, -1);
+		Particle p3 = new Particle(gp, generator, color, size, speed, duration, -1, 1);
+		Particle p4 = new Particle(gp, generator, color, size, speed, duration, 1, 1);
+		gp.particles.add(p1);
+		gp.particles.add(p2);
+		gp.particles.add(p3);
+		gp.particles.add(p4);
+	}
+	
 	public void update() {
 		setAction();
 		
@@ -103,7 +136,8 @@ public class Entity {
 		gp.collisionChecker.checkObject(this, false);
 		gp.collisionChecker.checkEntity(this, gp.npc);
 		gp.collisionChecker.checkEntity(this, gp.monster);
-		boolean hitPlayer = gp.collisionChecker.checkPlayer(this);
+		gp.collisionChecker.checkITile(this, gp.iTiles);
+		boolean hitPlayer = gp.collisionChecker.checkPlayer(this);	
 		
 		if(hitPlayer && this.type == TYPE_MONSTER) {
 			damagePlayer(attack);
@@ -222,7 +256,7 @@ public class Entity {
 		int screenX = worldX - gp.player.worldX + gp.player.screenX;
 		int screenY = worldY - gp.player.worldY + gp.player.screenY;
 		
-		//Check if NPC is off the Screen
+		//Check if is off the Screen
 		if(!(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
 		   worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
 		   worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
@@ -265,7 +299,7 @@ public class Entity {
 		changeAlpha(g2,1f);
 		
 		if(gp.debug) {
-			//Player Collision
+			//Debug Collision
 			g2.setColor(Color.red);
 			g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
 		}

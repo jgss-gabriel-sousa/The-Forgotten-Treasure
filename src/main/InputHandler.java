@@ -3,6 +3,8 @@ package main;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
 public class InputHandler implements KeyListener {
 	GamePanel gp;
 	public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
@@ -91,8 +93,8 @@ public class InputHandler implements KeyListener {
 		if(code == KeyEvent.VK_ENTER) {	
 			enterPressed = true;
 		}
-		
-		if(code == KeyEvent.VK_C) {
+
+		if(code == KeyEvent.VK_I || code == KeyEvent.VK_TAB) {
 			gp.gameState = gp.CHARACTER_STATE;
 		}
 		
@@ -114,7 +116,7 @@ public class InputHandler implements KeyListener {
 	}
 	
 	void characterState(int code) {
-		if(code == KeyEvent.VK_C ||  code == KeyEvent.VK_ESCAPE) {
+		if(code == KeyEvent.VK_I ||  code == KeyEvent.VK_ESCAPE || code == KeyEvent.VK_TAB) {
 			gp.gameState = gp.PLAY_STATE;
 			gp.playSFX(gp.sfx.CURSOR);
 		}

@@ -1,6 +1,10 @@
 package main;
 
+import java.util.ArrayList;
+
 import entity.Entity;
+import entity.Player;
+import tile_interactive.InteractiveTile;
 
 public class CollisionChecker {
 	GamePanel gp;
@@ -129,6 +133,42 @@ public class CollisionChecker {
 	    
 	    return index;
 	}
+
+	public int checkITile(Entity entity, ArrayList<InteractiveTile> target) {
+		int index = -1;
+	    
+	    for(int i = 0; i < target.size(); i++) {
+	        if(target.get(i) != null) {
+
+	    	    // Get entity solid area position
+	    	    entity.solidArea.x = entity.worldX + entity.solidArea.x;
+	    	    entity.solidArea.y = entity.worldY + entity.solidArea.y;
+	    	    // Get object solid area position
+	    	    target.get(i).solidArea.x = target.get(i).worldX + target.get(i).solidArea.x;
+	    	    target.get(i).solidArea.y = target.get(i).worldY + target.get(i).solidArea.y;
+
+	    	    if(entity.direction == "up")	entity.solidArea.y -= entity.speed;
+	    	    if(entity.direction == "down")	entity.solidArea.y += entity.speed;
+	    	    if(entity.direction == "left")	entity.solidArea.x -= entity.speed;
+	    	    if(entity.direction == "right")	entity.solidArea.x += entity.speed;
+	            
+	            if(entity.solidArea.intersects(target.get(i).solidArea)) {
+                	if(target.get(i) != entity) {
+                    	entity.collisionOn = true;
+                    	index = i;
+                	}
+                }
+	            // Reset entity and object coordinates
+	    	    entity.solidArea.x = entity.solidAreaDefaultX;
+	    	    entity.solidArea.y = entity.solidAreaDefaultY;
+	    	    target.get(i).solidArea.x = target.get(i).solidAreaDefaultX;
+	    	    target.get(i).solidArea.y = target.get(i).solidAreaDefaultY;
+	        }
+	    }
+	    
+	    return index;
+	}
+	
 	
 	public boolean checkPlayer(Entity entity) {
 		boolean hitPlayer = false;

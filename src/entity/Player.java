@@ -15,6 +15,7 @@ import object.OBJ_Key;
 import object.OBJ_Rock;
 import object.OBJ_Shield_Wood;
 import object.OBJ_Sword_Normal;
+import tile_interactive.InteractiveTile;
 
 public class Player extends Entity {
 	GamePanel gp;
@@ -131,10 +132,13 @@ public class Player extends Entity {
 		//Check NPC Collision
 		int npcIndex = gp.collisionChecker.checkEntity(this, gp.npc);
 		interactNPC(npcIndex);
-
+		
 		//Check Monster Collision
 		int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
 		contactMonster(monsterIndex);
+
+		//Check Interactive Tiles Collision
+		int iTileIndex = gp.collisionChecker.checkITile(this, gp.iTiles);
 
 		//Check Events
 		gp.eventHandler.checkEvent();
@@ -242,6 +246,9 @@ public class Player extends Entity {
 			int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
 			damageMonster(monsterIndex, attack);
 			
+			int iTileIndex = gp.collisionChecker.checkITile(this, gp.iTiles);
+			damageInteractiveTile(iTileIndex);
+			
 			worldX = currentWorldX;
 			worldY = currentWorldY;
 			solidArea.width = solidAreaWidth;
@@ -342,6 +349,27 @@ public class Player extends Entity {
 				gp.ui.addMessage(gp.monster[i].name+" has been killed! ("+gp.monster[i].exp+" xp)");
 				exp += gp.monster[i].exp;
 				checkLevelUp();
+			}
+		}
+	}
+
+	void damageInteractiveTile(int i) {
+		if(i == -1) return;
+		
+		InteractiveTile tile = gp.iTiles.get(i);
+		
+		if(tile.destructible && !tile.invincible && tile.checkRequiredItem(this)) {
+			tile.playSFX();
+			tile.hp--;
+			tile.invincible = true;
+			
+			generateParticles(tile, tile);
+			
+			if(tile.hp < 0) {
+				gp.iTiles.set(i, tile.getDestroyedForm());
+				
+				if(gp.iTiles.get(i) == null)
+					gp.iTiles.remove(i);
 			}
 		}
 	}

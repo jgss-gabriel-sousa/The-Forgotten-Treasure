@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import entity.Entity;
 import object.OBJ_Heart;
 import object.OBJ_ManaCrystal;
+import tile_interactive.InteractiveTile;
 
 public class UI {
 	GamePanel gp;
@@ -74,33 +75,43 @@ public class UI {
 	}
 	
 	void drawDebug() {
-		int i = 1;
 		int xPos = gp.player.worldX + (gp.tileSize/2);
 		int yPos = gp.player.worldY + (gp.tileSize/2);
 		int xTile = xPos / gp.tileSize;
 		int yTile = yPos / gp.tileSize;
 		
-		g2.setFont(arial);
+		ArrayList<String> infos = new ArrayList<>();
+		
+		infos.add("Time: "+dFormat.format(gp.playTime));
+		infos.add("Position: "+xPos+", "+yPos);
+		infos.add("Tile: "+xTile+", "+yTile);
+		infos.add("Player Speed: "+gp.player.speed);
+		infos.add("Player Direction: "+gp.player.direction);
+		infos.add("Player Sprite: "+gp.player.spriteNum);
+		infos.add("Player Collision: "+gp.player.collisionOn);
+		infos.add("Player Collision with NPC: "+gp.player.collisionWithNPC);
+		infos.add("Draw Time: "+dFormat3.format(gp.drawTime/10000000)+"ms");
+		infos.add("Entity Count: "+gp.entityList.size());
+		infos.add("Interactive Tiles Count: "+gp.iTiles.size());
+		infos.add("Particles Count: "+gp.particles.size());
+
+		g2.setColor(new Color(20,20,20));
+		g2.fillRect(0, 0, 200, infos.size()*12);
+
 		g2.setColor(Color.white);
+		g2.setFont(arial);
 		g2.setFont(g2.getFont().deriveFont(10F));
 		
-		g2.drawString("Time: "+dFormat.format(gp.playTime), 5, i++*10);
-		g2.drawString("Position: "+xPos+", "+yPos, 5, i++*10);
-		g2.drawString("Tile: "+xTile+", "+yTile, 5, i++*10);
-		g2.drawString("Player Speed: "+gp.player.speed, 5, i++*10);
-		g2.drawString("Player Direction: "+gp.player.direction, 5, i++*10);
-		g2.drawString("Player Sprite: "+gp.player.spriteNum, 5, i++*10);
-		g2.drawString("Player Collision: "+gp.player.collisionOn, 5, i++*10);
-		g2.drawString("Player Collision with NPC: "+gp.player.collisionWithNPC, 5, i++*10);
-		g2.drawString("Draw Time: "+dFormat3.format(gp.drawTime/10000000)+"ms", 5, i++*10);
-		g2.drawString("Entity Count: "+gp.entityList.size(), 5, i++*10);
+		for(int i = 1; i < infos.size(); i++) {
+			g2.drawString(infos.get(i), 5, i*12);
+		}
 		
 		if(gp.gameState == gp.TITLE_STATE) {
-			for(int j = 0; j < (int)gp.screenWidth/gp.tileSize; j++) {
-				g2.drawRect(j*gp.tileSize, 0, gp.tileSize, gp.tileSize);
+			for(int i = 0; i < (int)gp.screenWidth/gp.tileSize; i++) {
+				g2.drawRect(i*gp.tileSize, 0, gp.tileSize, gp.tileSize);
 				
-				for(int k = 0; k < (int)gp.screenWidth/gp.tileSize; k++) {
-					g2.drawRect(j*gp.tileSize, k*gp.tileSize, gp.tileSize, gp.tileSize);
+				for(int j = 0; j < (int)gp.screenWidth/gp.tileSize; j++) {
+					g2.drawRect(i*gp.tileSize, j*gp.tileSize, gp.tileSize, gp.tileSize);
 				}
 			}
 		}

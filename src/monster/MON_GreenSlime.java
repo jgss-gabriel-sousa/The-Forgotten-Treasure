@@ -80,12 +80,15 @@ public class MON_GreenSlime extends Entity {
 			actionLockCounter = 0;
 		}
 		
+		/*
+		SHOOT PROJECTILE
+		
 		i = new Random().nextInt(100)+1;
 		if(i > 99 && !projectile.alive && shotSpeedCounter == 80) {
 			projectile.set(worldX, worldY, direction, true, this);
 			gp.projectiles.add(projectile);
 			shotSpeedCounter = 0;
-		}
+		}*/
 	}
 	
 	public void damageReaction() {
