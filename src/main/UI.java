@@ -90,6 +90,7 @@ public class UI {
 		infos.add("Player Sprite: "+gp.player.spriteNum);
 		infos.add("Player Collision: "+gp.player.collisionOn);
 		infos.add("Player Collision with NPC: "+gp.player.collisionWithNPC);
+		infos.add("FPS: "+gp.gameFPS);
 		infos.add("Draw Time: "+dFormat3.format(gp.drawTime/10000000)+"ms");
 		infos.add("Entity Count: "+gp.entityList.size());
 		infos.add("Interactive Tiles Count: "+gp.iTiles.size());
@@ -136,7 +137,7 @@ public class UI {
 		return x;
 	}
 	
-	void drawLoadingScreen() {
+	void drawLoadingScreen() {		
 		g2.setColor(new Color(70,120,80));
 		g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
 		
@@ -229,12 +230,14 @@ public class UI {
 	}
 	
 	void drawPauseScreen() {
-		g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80F));
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 80F));
 
 		String text = "PAUSED";
 		int x = getXforCenteredText(text);
 		int y = gp.tileSize*2;
 
+		g2.setColor(Color.black);
+		g2.drawString(text, x+4, y+4);
 		g2.setColor(Color.white);
 		g2.drawString(text, x, y);
 	}
@@ -242,11 +245,10 @@ public class UI {
 	void drawDialogueScreen() {
 		g2.setFont(purisaBold);
 		g2.setColor(Color.white);
-		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 14F));
 		
 		int x = gp.tileSize*2;
-		int y = gp.screenWidth - gp.tileSize*8 - (gp.tileSize/2);
+		int y = gp.screenWidth - gp.tileSize*12 - (gp.tileSize/2);
 		int width = gp.screenWidth - (gp.tileSize*4);
 		int height = gp.tileSize*4;
 		
@@ -260,7 +262,7 @@ public class UI {
 			y += 40;
 		}
 		
-		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		//g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 	}
 	
 	void drawCharacterScreen() {
@@ -358,6 +360,8 @@ public class UI {
 	}
 	
 	void drawInventory() {
+		
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		final int frameWidth = gp.tileSize*6;
 		final int frameHeight = gp.tileSize*5;
 		final int frameX = gp.screenWidth-frameWidth-gp.tileSize/2;
@@ -430,6 +434,9 @@ public class UI {
 				textY += 20;
 			}
 		}
+		
+		g2.setStroke(new BasicStroke(1));
+		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 	}
 	
 	public int getItemIndexOnSlot() {
@@ -445,6 +452,7 @@ public class UI {
 		g2.setColor(c);
 		g2.setStroke(new BasicStroke(5));
 		g2.drawRoundRect(x+5, y+5, width-10, heigth-10, 25, 25);
+		g2.setStroke(new BasicStroke(1));
 	}
 	
 	void drawPlayerHP(){
@@ -499,20 +507,20 @@ public class UI {
 		int messageY = gp.tileSize*3;
 
 		g2.setFont(maruMonica);
-		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
 		
 		for(int i = 0; i < message.size(); i++) {
 			if(message.get(i) != null) {
 				g2.setColor(Color.black);
-				g2.drawString(message.get(i), messageX+2, messageY+2);
+				g2.drawString(message.get(i), messageX+1, messageY+1);
 				g2.setColor(Color.white);
 				g2.drawString(message.get(i), messageX, messageY);
 				
 				int counter = messageCounter.get(i) + 1;
 				messageCounter.set(i, counter);
-				messageY += 35;
+				messageY += 22;
 				
-				if(messageCounter.get(i) > 180) {
+				if(messageCounter.get(i) > 200) {
 					message.remove(i);
 					messageCounter.remove(i);
 				}
