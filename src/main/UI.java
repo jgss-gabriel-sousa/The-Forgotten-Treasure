@@ -360,7 +360,6 @@ public class UI {
 	}
 	
 	void drawInventory() {
-		
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		final int frameWidth = gp.tileSize*6;
 		final int frameHeight = gp.tileSize*5;
@@ -375,7 +374,6 @@ public class UI {
 		int slotSize = gp.tileSize+3;
 		
 		for(int i = 0; i < gp.player.inventory.size(); i++) {
-			
 			if(gp.player.inventory.get(i) == gp.player.currentWeapon ||
 			   gp.player.inventory.get(i) == gp.player.currentShield) {
 				g2.setColor(new Color(240,190,90));

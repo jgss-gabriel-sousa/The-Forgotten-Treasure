@@ -145,8 +145,8 @@ public class GamePanel extends JPanel implements Runnable {
 			
 			if(delta >= 1) {
 				update();
-				drawToTempScreen();
-				drawToScreen();
+				drawScreen();
+				updateScreen();
 				delta--;
 				drawCount++;
 			}
@@ -230,7 +230,7 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 	
-	public void drawToTempScreen() {		
+	public void drawScreen() {		
 		if(debug) {
 			drawStart = 0;
 			drawStart = System.nanoTime();
@@ -309,20 +309,25 @@ public class GamePanel extends JPanel implements Runnable {
 			
 			if(drawIndex == drawTimes.length) {
 				drawIndex = 0;
-				drawTime = 0;
-
-				for(int i = 0; i < drawTimes.length; i++) {
-					drawTime += drawTimes[i];
-				}
-				drawTime /= drawTimes.length;
+				updateAverageDrawTime();
 			}
 		}
 	}
 	
-	public void drawToScreen() {
-		Graphics g = getGraphics();
-		g.drawImage(tempScreen, 0, 0, screenWidthFull, screenHeightFull, null);
-		g.dispose();
+	private void updateAverageDrawTime() {
+	    long totalDrawTime = 0;
+	    
+	    for (double time : drawTimes) {
+	        totalDrawTime += time;
+	    }
+	    
+	    drawTime = totalDrawTime / drawTimes.length;
+	}
+	
+	public void updateScreen() {
+	    Graphics g = getGraphics();
+	    g.drawImage(tempScreen, 0, 0, screenWidthFull, screenHeightFull, null);
+	    g.dispose();
 	}
 	
 	public void playMusic(int id) {
