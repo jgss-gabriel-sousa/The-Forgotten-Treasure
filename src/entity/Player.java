@@ -31,6 +31,9 @@ public class Player extends Entity {
 	public ArrayList<Entity> inventory = new ArrayList<>();
 	public final int maxInventorySize = 20;
 	
+	public boolean isInCar = false;
+	public boolean invisible = false;
+	
 	public Player(GamePanel gp, InputHandler input) {
 		super(gp);
 		
@@ -159,6 +162,14 @@ public class Player extends Entity {
 				invincibleCounter = 0;
 			}
 		}
+		
+		if(isInCar) {
+			invisible = true;
+		}
+		else {
+			invisible = false;
+		}
+		
 		
 		if(attacking) {
 			attack();
@@ -459,6 +470,10 @@ public class Player extends Entity {
 		
 		if(invincible) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+		}
+		
+		if(invisible) {
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0f));
 		}
 		
 		g2.drawImage(image, screenX, screenY, null);

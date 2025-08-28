@@ -78,6 +78,7 @@ public class Entity {
 	public final int TYPE_PLAYER = 0;
 	public final int TYPE_NPC = 1;
 	public final int TYPE_MONSTER = 2;
+	public final int TYPE_VEHICLE = 3;
 	public final int TYPE_ITEM_SWORD = 10;
 	public final int TYPE_ITEM_AXE = 11;
 	public final int TYPE_ITEM_SHIELD = 12;

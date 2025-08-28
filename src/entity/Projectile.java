@@ -11,7 +11,6 @@ public class Projectile extends Entity{
 	}
 	
 	public void set(int worldX, int worldY, String direction, boolean alive, Entity user) {
-		
 		this.worldX = worldX;
 		this.worldY = worldY;
 		this.direction = direction;
@@ -21,7 +20,6 @@ public class Projectile extends Entity{
 	}
 
 	public void update() {
-		
 		if(user == gp.player) {
 			int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
 			
@@ -41,24 +39,45 @@ public class Projectile extends Entity{
 			}
 		}
 		
-		if(direction == "up") 		worldY -= speed;
-		if(direction == "down") 	worldY += speed;
-		if(direction == "left") 	worldX -= speed;
-		if(direction == "right") 	worldX += speed;
-		
+		if(direction.equals("up")) 		worldY -= speed;
+		if(direction.equals("down")) 	worldY += speed;
+		if(direction.equals("left")) 	worldX -= speed;
+		if(direction.equals("right")) 	worldX += speed;
+
+        move();
+        
 		hp--;	
 		if(hp <= 0) {
 			alive = false;
 		}
 		
-		spriteCounter++;
-		if(spriteCounter > 12) { //Change sprite after every 12 frames
-			spriteNum++;
-
-			if(spriteNum == up.length) {
-				spriteNum = 0;
-			}
-			spriteCounter = 0;
-		}
+		updateSprite();
 	}
+	
+	private void move() {
+        if (direction.equals("up")) worldY -= speed;
+        if (direction.equals("down")) worldY += speed;
+        if (direction.equals("left")) worldX -= speed;
+        if (direction.equals("right")) worldX += speed;
+    }
+	
+	private void updateSprite() {
+        spriteCounter++;
+        if (spriteCounter > 12) { //Change sprite after every 12 frames
+            spriteNum++;
+
+            if (spriteNum == up.length) {
+                spriteNum = 0;
+            }
+            spriteCounter = 0;
+        }
+    }
+
+    public Entity getUser() {
+        return user;
+    }
+
+    public void setUser(Entity user) {
+        this.user = user;
+    }
 }

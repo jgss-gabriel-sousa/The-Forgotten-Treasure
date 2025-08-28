@@ -19,6 +19,7 @@ import object.OBJ_Spider;
 import object.OBJ_Sword_Normal;
 import tile_interactive.IT_Log;
 import tile_interactive.InteractiveTile;
+import vehicles.Car;
 
 public class AssetManager {
 	GamePanel gp;
@@ -66,6 +67,7 @@ public class AssetManager {
 		}
 		if(type == "monster") {	
 			if(id == "greenSlime")	obj = new MON_GreenSlime(gp);
+			if(id == "car")			obj = new Car(gp);
 			
 			obj.worldX = tileX * gp.tileSize;
 			obj.worldY = tileY * gp.tileSize;
@@ -106,6 +108,7 @@ public class AssetManager {
 		set("monster","greenSlime", 24, 37);
 		set("monster","greenSlime", 34, 42);
 		set("monster","greenSlime", 38, 42);
+		set("monster","car", 37, 42);
 	}
 	
 	public void setInteractiveTiles() {

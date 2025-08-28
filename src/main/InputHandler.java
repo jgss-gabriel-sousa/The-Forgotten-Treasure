@@ -7,7 +7,7 @@ import javax.swing.plaf.synth.SynthOptionPaneUI;
 
 public class InputHandler implements KeyListener {
 	GamePanel gp;
-	public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed;
+	public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, shotKeyPressed, enterCarPressed;
 	
 	int dialogueDelay = 0;
 	
@@ -101,6 +101,10 @@ public class InputHandler implements KeyListener {
 		if(code == KeyEvent.VK_F) {
 			shotKeyPressed = true;
 		}
+		
+		if(code == KeyEvent.VK_E) {
+			enterCarPressed = true;
+		}
 	}
 	
 	void pauseState(int code) {
@@ -172,6 +176,10 @@ public class InputHandler implements KeyListener {
 		
 		if(code == KeyEvent.VK_F) {
 			shotKeyPressed = false;
+		}
+		
+		if(code == KeyEvent.VK_E) {
+			enterCarPressed = false;
 		}
 	}
 }
